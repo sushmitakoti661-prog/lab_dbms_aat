@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Welcome back, here's what's happening today{% endblock %}
+
+{% block content %}
+
+<!-- GREETING -->
+<div class="greeting-banner">
+    <div class="greeting-text">
+        <h2>Hello, {{ session.name }} 👋</h2>
+        <p>Here's an overview of the Smart Lab system</p>
+    </div>
+    <div class="greeting-badge">Admin</div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-building"></i></div>
+        <div>
+            <div class="stat-value">{{ total_labs }}</div>
+            <div class="stat-label">Total Labs</div>
+        </div>
+    </div>
+    <div class="stat-card highlight">
+        <div class="stat-icon white"><i class="fa-solid fa-computer"></i></div>
+        <div>
+            <div class="stat-value">{{ total_equipment }}</div>
+            <div class="stat-label">Total Equipment</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon red"><i class="fa-solid fa-triangle-exclamation"></i></div>
+        <div>
+            <div class="stat-value">{{ damaged }}</div>
+            <div class="stat-label">Damaged Equipment</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon yellow"><i class="fa-solid fa-clock"></i></div>
+        <div>
+            <div class="stat-value">{{ pending_repairs }}</div>
+            <div class="stat-label">Pending Repairs</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+            <div class="stat-value">{{ completed_repairs }}</div>
+            <div class="stat-label">Completed Repairs</div>
+        </div>
+    </div>
+</div>
+
+<!-- RECENT COMPLAINTS -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-clock-rotate-left" style="color:var(--primary);margin-right:8px;"></i>Recent Complaints</h3>
+        <a href="{{ url_for('admin_complaints') }}" class="btn btn-primary btn-sm">View All</a>
+    </div>
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if recent_complaints %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Equipment</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in recent_complaints %}
+                    <tr>
+                        <td>{{ c.complaint_id }}</td>
+                        <td>{{ c.student_name }}</td>
+                        <td>{{ c.equipment_name }}</td>
+                        <td>
+                            {% if c.status == 'open' %}
+                                <span class="badge badge-danger">Open</span>
+                            {% elif c.status == 'assigned' %}
+                                <span class="badge badge-warning">Assigned</span>
+                            {% else %}
+                                <span class="badge badge-success">Resolved</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.created_at.strftime('%d %b %Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-inbox"></i>
+                <p>No complaints yet</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

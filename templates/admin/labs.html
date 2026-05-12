@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+{% block title %}Labs{% endblock %}
+{% block page_title %}Labs{% endblock %}
+{% block page_subtitle %}Manage all laboratory rooms{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Labs</h1>
+        <p>{{ labs|length }} lab(s) registered</p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal('addLabModal')">
+        <i class="fa-solid fa-plus"></i> Add Lab
+    </button>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if labs %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Lab Name</th>
+                        <th>Location</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lab in labs %}
+                    <tr>
+                        <td>{{ lab.lab_id }}</td>
+                        <td><strong>{{ lab.lab_name }}</strong></td>
+                        <td>{{ lab.location }}</td>
+                        <td style="display:flex;gap:8px;">
+                            <button class="btn btn-info btn-sm"
+                                onclick="openEditLab({{ lab.lab_id }}, '{{ lab.lab_name }}', '{{ lab.location }}')">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                            <a href="{{ url_for('delete_lab', lab_id=lab.lab_id) }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Delete this lab?')">
+                                <i class="fa-solid fa-trash"></i> Delete
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-building"></i>
+                <p>No labs added yet. Click "Add Lab" to get started.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ADD LAB MODAL -->
+<div class="modal-overlay" id="addLabModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Add New Lab</h3>
+            <button class="modal-close" onclick="closeModal('addLabModal')">&times;</button>
+        </div>
+        <form method="POST" action="{{ url_for('add_lab') }}">
+            <div class="form-group">
+                <label>Lab Name</label>
+                <input type="text" name="lab_name" class="form-control"
+                       placeholder="e.g. CS Lab 1" required>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" class="form-control"
+                       placeholder="e.g. Block A, Floor 2" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger"
+                        onclick="closeModal('addLabModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-plus"></i> Add Lab
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- EDIT LAB MODAL -->
+<div class="modal-overlay" id="editLabModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Edit Lab</h3>
+            <button class="modal-close" onclick="closeModal('editLabModal')">&times;</button>
+        </div>
+        <form method="POST" id="editLabForm">
+            <div class="form-group">
+                <label>Lab Name</label>
+                <input type="text" name="lab_name" id="editLabName"
+                       class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Location</label>
+                <input type="text" name="location" id="editLabLocation"
+                       class="form-control" required>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger"
+                        onclick="closeModal('editLabModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-floppy-disk"></i> Save Changes
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openEditLab(id, name, location) {
+    document.getElementById('editLabName').value = name;
+    document.getElementById('editLabLocation').value = location;
+    document.getElementById('editLabForm').action = '/admin/labs/edit/' + id;
+    openModal('editLabModal');
+}
+</script>
+
+{% endblock %}

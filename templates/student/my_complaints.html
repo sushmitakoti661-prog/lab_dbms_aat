@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block title %}My Complaints{% endblock %}
+{% block page_title %}My Complaints{% endblock %}
+{% block page_subtitle %}Track the status of your reported issues{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>My Complaints</h1>
+        <p>{{ complaints|length }} complaint(s) submitted</p>
+    </div>
+    <a href="{{ url_for('report_issue') }}" class="btn btn-primary">
+        <i class="fa-solid fa-plus"></i> Report New Issue
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if complaints %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Equipment</th>
+                        <th>Lab</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Submitted On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in complaints %}
+                    <tr>
+                        <td>{{ c.complaint_id }}</td>
+                        <td><strong>{{ c.equipment_name }}</strong></td>
+                        <td>{{ c.lab_name }}</td>
+                        <td style="max-width:220px;">
+                            {{ c.description[:70] }}{% if c.description|length > 70 %}...{% endif %}
+                        </td>
+                        <td>
+                            {% if c.status == 'open' %}
+                                <span class="badge badge-danger">Open</span>
+                            {% elif c.status == 'assigned' %}
+                                <span class="badge badge-warning">Assigned</span>
+                            {% else %}
+                                <span class="badge badge-success">Resolved</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.created_at.strftime('%d %b %Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-inbox"></i>
+                <p>You haven't reported any issues yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

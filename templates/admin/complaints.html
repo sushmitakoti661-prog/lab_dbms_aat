@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block title %}Complaints{% endblock %}
+{% block page_title %}Complaints{% endblock %}
+{% block page_subtitle %}View and assign student complaints{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Complaints</h1>
+        <p>{{ complaints|length }} total complaint(s)</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if complaints %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Student</th>
+                        <th>Equipment</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in complaints %}
+                    <tr>
+                        <td>{{ c.complaint_id }}</td>
+                        <td>{{ c.student_name }}</td>
+                        <td>{{ c.equipment_name }}</td>
+                        <td style="max-width:200px;">{{ c.description[:60] }}{% if c.description|length > 60 %}...{% endif %}</td>
+                        <td>
+                            {% if c.status == 'open' %}
+                                <span class="badge badge-danger">Open</span>
+                            {% elif c.status == 'assigned' %}
+                                <span class="badge badge-warning">Assigned</span>
+                            {% else %}
+                                <span class="badge badge-success">Resolved</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ c.created_at.strftime('%d %b %Y') }}</td>
+                        <td>
+                            {% if c.status == 'open' %}
+                            <button class="btn btn-primary btn-sm"
+                                onclick="openAssign({{ c.complaint_id }})">
+                                <i class="fa-solid fa-user-gear"></i> Assign
+                            </button>
+                            {% else %}
+                                <span style="color:var(--text-light);font-size:12px;">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-inbox"></i>
+                <p>No complaints found.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- ASSIGN MODAL -->
+<div class="modal-overlay" id="assignModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3>Assign to Technician</h3>
+            <button class="modal-close" onclick="closeModal('assignModal')">&times;</button>
+        </div>
+        <form method="POST" id="assignForm">
+            <div class="form-group">
+                <label>Select Technician</label>
+                <select name="technician_id" class="form-control" required>
+                    <option value="">-- Select --</option>
+                    {% for t in technicians %}
+                    <option value="{{ t.technician_id }}">{{ t.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger"
+                        onclick="closeModal('assignModal')">Cancel</button>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fa-solid fa-paper-plane"></i> Assign
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+function openAssign(complaintId) {
+    document.getElementById('assignForm').action = '/admin/complaints/assign/' + complaintId;
+    openModal('assignModal');
+}
+</script>
+
+{% endblock %}

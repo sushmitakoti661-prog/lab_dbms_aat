@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Maintenance{% endblock %}
+{% block page_title %}Maintenance Requests{% endblock %}
+{% block page_subtitle %}Track all repair assignments{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Maintenance Requests</h1>
+        <p>{{ requests|length }} total request(s)</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if requests %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Equipment</th>
+                        <th>Technician</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Remarks</th>
+                        <th>Assigned On</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for r in requests %}
+                    <tr>
+                        <td>{{ r.request_id }}</td>
+                        <td><strong>{{ r.equipment_name }}</strong></td>
+                        <td>{{ r.technician_name }}</td>
+                        <td style="max-width:160px;">
+                            {{ r.description[:50] }}{% if r.description|length > 50 %}...{% endif %}
+                        </td>
+                        <td>
+                            {% if r.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif r.status == 'in_progress' %}
+                                <span class="badge badge-info">In Progress</span>
+                            {% else %}
+                                <span class="badge badge-success">Completed</span>
+                            {% endif %}
+                        </td>
+                        <td style="max-width:160px;">
+                            {% if r.remarks %}
+                                {{ r.remarks[:50] }}{% if r.remarks|length > 50 %}...{% endif %}
+                            {% else %}
+                                <span style="color:var(--text-light);">—</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ r.assigned_at.strftime('%d %b %Y') }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <p>No maintenance requests yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

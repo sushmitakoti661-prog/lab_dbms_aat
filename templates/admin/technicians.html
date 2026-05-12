@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% block title %}Technicians{% endblock %}
+{% block page_title %}Technicians{% endblock %}
+{% block page_subtitle %}Manage registered technicians{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Technicians</h1>
+        <p>{{ technicians|length }} technician(s) registered</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if technicians %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Specialization</th>
+                        <th>Phone</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in technicians %}
+                    <tr>
+                        <td>{{ t.technician_id }}</td>
+                        <td><strong>{{ t.name }}</strong></td>
+                        <td>{{ t.email }}</td>
+                        <td>{{ t.specialization }}</td>
+                        <td>{{ t.phone }}</td>
+                        <td>
+                            <a href="{{ url_for('delete_technician', technician_id=t.technician_id) }}"
+                               class="btn btn-danger btn-sm"
+                               onclick="return confirm('Remove this technician?')">
+                                <i class="fa-solid fa-trash"></i> Remove
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-user-gear"></i>
+                <p>No technicians registered yet. They can register via the Register page.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

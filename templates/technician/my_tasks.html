@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}My Tasks{% endblock %}
+{% block page_title %}My Tasks{% endblock %}
+{% block page_subtitle %}All repair tasks assigned to you{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>My Tasks</h1>
+        <p>{{ tasks|length }} task(s) assigned</p>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-body" style="padding:0;">
+        <div class="table-wrapper">
+            {% if tasks %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Equipment</th>
+                        <th>Lab</th>
+                        <th>Reported By</th>
+                        <th>Description</th>
+                        <th>Status</th>
+                        <th>Assigned On</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in tasks %}
+                    <tr>
+                        <td>{{ t.request_id }}</td>
+                        <td><strong>{{ t.equipment_name }}</strong></td>
+                        <td>{{ t.lab_name }}</td>
+                        <td>{{ t.student_name }}</td>
+                        <td style="max-width:180px;">
+                            {{ t.description[:60] }}{% if t.description|length > 60 %}...{% endif %}
+                        </td>
+                        <td>
+                            {% if t.status == 'pending' %}
+                                <span class="badge badge-warning">Pending</span>
+                            {% elif t.status == 'in_progress' %}
+                                <span class="badge badge-info">In Progress</span>
+                            {% else %}
+                                <span class="badge badge-success">Completed</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ t.assigned_at.strftime('%d %b %Y') }}</td>
+                        <td>
+                            {% if t.status != 'completed' %}
+                            <a href="{{ url_for('update_repair', request_id=t.request_id) }}"
+                               class="btn btn-primary btn-sm">
+                                <i class="fa-solid fa-pen-to-square"></i> Update
+                            </a>
+                            {% else %}
+                                <span style="color:var(--text-light);font-size:12px;">Done</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <div class="empty-state">
+                <i class="fa-solid fa-screwdriver-wrench"></i>
+                <p>No tasks assigned to you yet.</p>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

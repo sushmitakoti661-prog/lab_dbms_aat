@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Smart Lab{% endblock %} | Smart Lab Management</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+<body>
+
+<div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+        <div class="sidebar-logo">
+            <div class="logo-icon">SL</div>
+            <span>SmartLab</span>
+        </div>
+
+        <nav class="sidebar-nav">
+
+            {% if session.role == 'admin' %}
+            <div class="nav-section-title">Main</div>
+            <a href="{{ url_for('admin_dashboard') }}"
+               class="nav-item {% if request.endpoint == 'admin_dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+
+            <div class="nav-section-title">Manage</div>
+            <a href="{{ url_for('admin_labs') }}"
+               class="nav-item {% if request.endpoint == 'admin_labs' %}active{% endif %}">
+                <i class="fa-solid fa-building"></i> Labs
+            </a>
+            <a href="{{ url_for('admin_equipment') }}"
+               class="nav-item {% if request.endpoint == 'admin_equipment' %}active{% endif %}">
+                <i class="fa-solid fa-computer"></i> Equipment
+            </a>
+            <a href="{{ url_for('admin_complaints') }}"
+               class="nav-item {% if request.endpoint == 'admin_complaints' %}active{% endif %}">
+                <i class="fa-solid fa-triangle-exclamation"></i> Complaints
+            </a>
+            <a href="{{ url_for('admin_technicians') }}"
+               class="nav-item {% if request.endpoint == 'admin_technicians' %}active{% endif %}">
+                <i class="fa-solid fa-user-gear"></i> Technicians
+            </a>
+            <a href="{{ url_for('admin_maintenance') }}"
+               class="nav-item {% if request.endpoint == 'admin_maintenance' %}active{% endif %}">
+                <i class="fa-solid fa-screwdriver-wrench"></i> Maintenance
+            </a>
+
+            {% elif session.role == 'student' %}
+            <div class="nav-section-title">Main</div>
+            <a href="{{ url_for('student_dashboard') }}"
+               class="nav-item {% if request.endpoint == 'student_dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+
+            <div class="nav-section-title">Issues</div>
+            <a href="{{ url_for('report_issue') }}"
+               class="nav-item {% if request.endpoint == 'report_issue' %}active{% endif %}">
+                <i class="fa-solid fa-circle-exclamation"></i> Report Issue
+            </a>
+            <a href="{{ url_for('my_complaints') }}"
+               class="nav-item {% if request.endpoint == 'my_complaints' %}active{% endif %}">
+                <i class="fa-solid fa-list-check"></i> My Complaints
+            </a>
+
+            {% elif session.role == 'technician' %}
+            <div class="nav-section-title">Main</div>
+            <a href="{{ url_for('technician_dashboard') }}"
+               class="nav-item {% if request.endpoint == 'technician_dashboard' %}active{% endif %}">
+                <i class="fa-solid fa-gauge"></i> Dashboard
+            </a>
+
+            <div class="nav-section-title">Work</div>
+            <a href="{{ url_for('my_tasks') }}"
+               class="nav-item {% if request.endpoint in ['my_tasks', 'update_repair'] %}active{% endif %}">
+                <i class="fa-solid fa-list-check"></i> My Tasks
+            </a>
+            {% endif %}
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <div class="sidebar-user">
+                <div class="user-avatar">
+                    {{ session.name[0] | upper }}
+                </div>
+                <div class="user-info">
+                    <div class="user-name">{{ session.name }}</div>
+                    <div class="user-role">{{ session.role }}</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+
+        <!-- NAVBAR -->
+        <nav class="navbar">
+            <div class="navbar-left">
+                <div class="page-title">{% block page_title %}Dashboard{% endblock %}</div>
+                <div class="page-subtitle">{% block page_subtitle %}{% endblock %}</div>
+            </div>
+            <div class="navbar-right">
+                <a href="{{ url_for('logout') }}" class="logout-btn">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </a>
+            </div>
+        </nav>
+
+        <!-- PAGE BODY -->
+        <div class="page-body">
+
+            <!-- FLASH MESSAGES -->
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <i class="fa-solid
+                                {% if category == 'success' %}fa-circle-check
+                                {% elif category == 'danger' %}fa-circle-xmark
+                                {% else %}fa-triangle-exclamation{% endif %}">
+                            </i>
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            {% block content %}{% endblock %}
+
+        </div>
+    </div>
+</div>
+
+<!-- MODAL JS (open/close) -->
+<script>
+    function openModal(id) {
+        document.getElementById(id).classList.add('active');
+    }
+    function closeModal(id) {
+        document.getElementById(id).classList.remove('active');
+    }
+    // Close modal on overlay click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', function(e) {
+            if (e.target === this) this.classList.remove('active');
+        });
+    });
+</script>
+
+</body>
+</html>

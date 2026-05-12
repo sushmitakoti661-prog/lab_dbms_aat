@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Student Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+{% block page_subtitle %}Track your reported issues{% endblock %}
+
+{% block content %}
+
+<!-- GREETING -->
+<div class="greeting-banner">
+    <div class="greeting-text">
+        <h2>Hello, {{ session.name }} 👋</h2>
+        <p>Here's a summary of your complaints</p>
+    </div>
+    <div class="greeting-badge">Student</div>
+</div>
+
+<!-- STAT CARDS -->
+<div class="stats-grid">
+    <div class="stat-card">
+        <div class="stat-icon blue"><i class="fa-solid fa-list"></i></div>
+        <div>
+            <div class="stat-value">{{ total }}</div>
+            <div class="stat-label">Total Complaints</div>
+        </div>
+    </div>
+    <div class="stat-card highlight">
+        <div class="stat-icon white"><i class="fa-solid fa-circle-exclamation"></i></div>
+        <div>
+            <div class="stat-value">{{ open_count }}</div>
+            <div class="stat-label">Open Complaints</div>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon green"><i class="fa-solid fa-circle-check"></i></div>
+        <div>
+            <div class="stat-value">{{ resolved }}</div>
+            <div class="stat-label">Resolved</div>
+        </div>
+    </div>
+</div>
+
+<!-- QUICK ACTIONS -->
+<div class="card">
+    <div class="card-header">
+        <h3><i class="fa-solid fa-bolt" style="color:var(--primary);margin-right:8px;"></i>Quick Actions</h3>
+    </div>
+    <div class="card-body" style="display:flex;gap:12px;flex-wrap:wrap;">
+        <a href="{{ url_for('report_issue') }}" class="btn btn-primary">
+            <i class="fa-solid fa-circle-exclamation"></i> Report New Issue
+        </a>
+        <a href="{{ url_for('my_complaints') }}" class="btn btn-info">
+            <i class="fa-solid fa-list-check"></i> View My Complaints
+        </a>
+    </div>
+</div>
+
+{% endblock %}
